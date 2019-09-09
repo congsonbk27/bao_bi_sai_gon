@@ -4,7 +4,7 @@ import Layout from '../../components/layout/layout'
 import page from '../../constants/page.const'
 import './style.less'
 import ExportExcellButton from './test'
-
+import Panner from './panner'
 export default class Page extends React.Component {
   constructor(props) {
     super(props)
@@ -28,6 +28,9 @@ export default class Page extends React.Component {
     return (
       <Layout history={history} page={page.checkup}>
 
+      <Panner></Panner>
+
+
         <div className="groupHead">
           <div className="name_group_1">Kiểm kê sản phẩm: </div>
 
@@ -41,19 +44,21 @@ export default class Page extends React.Component {
           </div>
 
         </div>
-        <br/>
+        <br />
+
+
+
         <div className="groupHead2">
-
           <div className="name_group_2">Danh sách sản phẩm: </div>
-
-          {/* <h1 className='title'>Danh sách sản phẩm</h1> */}
-          <table id='products'>
-            <tbody>
-              <tr>{this.renderTableHeader()}</tr>
-              {/* {this.renderRowTable()} */}
-              {this.renderAllProduct()}
-            </tbody>
-          </table>
+          <div className="content_table">
+            <table id='products'>
+              <tbody>
+                <tr>{this.renderTableHeader()}</tr>
+                {/* {this.renderRowTable()} */}
+                {this.renderAllProduct()}
+              </tbody>
+            </table>
+          </div>
         </div>
 
       </Layout>

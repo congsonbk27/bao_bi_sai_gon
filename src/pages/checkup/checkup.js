@@ -1,10 +1,15 @@
 import React from 'react'
+import moment from 'moment'
+
 import { Button } from 'antd'
 import Layout from '../../components/layout/layout'
 import page from '../../constants/page.const'
 import './style.less'
 import ExportExcellButton from './test'
+import { createCheckupInput, getCheckupInput } from "../../storage/checkupStoge"
 import Panner from './panner'
+
+
 export default class Page extends React.Component {
   constructor(props) {
     super(props)
@@ -17,7 +22,7 @@ export default class Page extends React.Component {
       arrId: [],
       arrWeight: [],
       products: [
-        { no: 0, id: "0", weight: 0, total: 0 }
+        { no: 0, id: "0", weight: 0, total: 0, time: null }
       ],
       sum: 0
     }
@@ -28,8 +33,7 @@ export default class Page extends React.Component {
     return (
       <Layout history={history} page={page.checkup}>
 
-      <Panner></Panner>
-
+        {/* <Panner></Panner> */}
 
         <div className="groupHead">
           <div className="name_group_1">Kiểm kê sản phẩm: </div>
@@ -46,13 +50,13 @@ export default class Page extends React.Component {
         </div>
         <br />
 
-
-
         <div className="groupHead2">
           <div className="name_group_2">Danh sách sản phẩm: </div>
           <div className="content_table">
             <table id='products'>
               <tbody>
+                {/* {this.renderRowHead()} */}
+                {/* <tr>{this.renderRowHead()}</tr> */}
                 <tr>{this.renderTableHeader()}</tr>
                 {/* {this.renderRowTable()} */}
                 {this.renderAllProduct()}
@@ -84,6 +88,17 @@ export default class Page extends React.Component {
     return arrRows;
   }
 
+  renderRowHead = () => {
+    return (
+      <tr key="5">
+        <td>STT</td>
+        <td>ID</td>
+        <td>Khối lượng</td>
+        <td>Ngày giờ</td>
+      </tr>
+    );
+  }
+
   renderRowProduct = (product) => {
     return (
       <tr key={product.id}>
@@ -91,14 +106,14 @@ export default class Page extends React.Component {
         <td>{product.id}</td>
         <td>{product.weight}kg</td>
         <td>{product.total}kg</td>
+        <td>{product.time}</td>
       </tr>
     );
   }
 
-
   ScanCode = () => {
     let buffer = '';
-    document.addEventListener('keypress', event => {
+    document.addEventListener('keypress', async (event) => {
       let data = buffer || '';
       if (event.key !== 'Enter') { // barcode ends with enter -key
         data += event.key;
@@ -121,8 +136,17 @@ export default class Page extends React.Component {
         if (isNaN(weight) == true) {
           return;
         }
+        // add data (id + weight) to data base
+        console.log("strId: ", strId);
+        console.log("weight: ", weight);
+        var recordA = await createCheckupInput({ id: strId, weight });
+        console.log("dataBase: ", recordA);
+        const time_save = recordA && recordA.createdAt ? moment(recordA.createdAt).format('HH:mm:SS  --- DD/MM/YYYY') : 'Không rõ';
+
         const oldArrWeight = this.state.arrWeight;
         oldArrWeight.unshift(weight);
+
+
 
         let sumWeight = 0;
         for (let i = 0; i < numProduct; i++) {
@@ -130,7 +154,7 @@ export default class Page extends React.Component {
         }
         sumWeight = sumWeight.toFixed(3);
         const oldProducts = this.state.products;
-        oldProducts.unshift({ no: numProduct, id: strId, weight: weight, total: sumWeight });
+        oldProducts.unshift({ no: numProduct, id: strId, weight: weight, total: sumWeight, time: time_save });
 
         this.setState({
           arrWeight: oldArrWeight,
@@ -172,106 +196,4 @@ export default class Page extends React.Component {
     return array
   }
 }
-
-
-
-
-
-
-// renderTableData = () => {
-//   return this.state.products.map((product, index) => {
-//     const { no, id, weight, total, time } = product; //destructuring
-//     return (
-//       <tr key={id}>
-//         <td>{no}</td>
-//         <td>{id}</td>
-//         <td>{weight} kg</td>
-//         <td>{total} kg</td>
-//       </tr>
-//     );
-//   });
-// }
-
-
-// renderList = () => {
-//   const array = [];
-//   for (let i = 0; i < this.state.arrId.length; i++) {
-//     const id = this.state.arrId[i];
-//     const weight = this.state.arrWeight[i];
-//     array.push(<p> {i} - {id} - {weight}</p>);
-//     <tr key={id}>
-//       <td>{i}</td>
-//       <td>{id}</td>
-//       <td> {weight}</td>
-//       {/* <td>{email}</td> */}
-//     </tr>
-//   }
-//   return array
-// }
-
-// onChangeValue2 = (event) => {
-//   if (event && event.target) {
-//     this.setState({
-//       value2: event.target.value
-//     })
-//   }
-// }
-
-// myFunction = (event) => {
-//   console.log(event);
-//   var x = event.target.value;         // Get the Unicode value
-//   console.log("x = " + x);
-
-//   var scanCode;
-//   var paperRoll = {};
-//   if (x == 13) {
-//     scanCode = document.getElementById("ScanCode").value;
-//     document.getElementById("demo").value = scanCode;
-//     document.getElementById("ScanCode").value = "";
-//     paperRoll = decoder(scanCode);
-//     if (isNaN(paperRoll.weight) != true) {
-//       add_paperRoll_to_row(paperRoll);
-//     }
-//   }
-//   event.preventDefault();
-// }
-
-// decoder = (scanCode) => {
-//   var paperRoll = {};
-//   paperRoll.id = scanCode.substring(0, 4);
-//   paperRoll.time = scanCode.substring(4, 8);
-//   paperRoll.weight = parseInt(scanCode.substring(8, 12));
-//   return paperRoll;
-// }
-// //add row
-// add_paperRoll_to_row = (paperRoll) => {
-
-//   var table = document.getElementById("customers");
-//   var table_len = (table.rows.length);
-
-//   var row = table.insertRow(table_len);
-
-//   var cell_no = row.insertCell(0);
-//   cell_no.innerHTML = "" + table_len;
-
-//   var cell_id = row.insertCell(1);
-//   cell_id.innerHTML = "" + paperRoll.id;
-
-//   var cell_time = row.insertCell(2);
-//   cell_time.innerHTML = "" + paperRoll.time;
-
-//   var cell_weight = row.insertCell(3);
-//   cell_weight.innerHTML = "" + paperRoll.weight + " kg";
-
-//   var old_weight = parseInt(table.rows[table_len - 1].cells[4].innerHTML);
-//   if (isNaN(old_weight)) {
-//     old_weight = 0;
-//   }
-
-//   var cell_total = row.insertCell(4);
-//   cell_total.innerHTML = "" + (old_weight + paperRoll.weight) + " kg";
-// }
-// delete_row = (no) => {
-//   document.getElementById("row" + no + "").outerHTML = "";
-// }
 

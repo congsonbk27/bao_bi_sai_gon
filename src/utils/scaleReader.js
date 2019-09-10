@@ -10,6 +10,7 @@ import moment from 'moment'
 import fs from 'fs'
 import shortid from 'shortid'
 import { createScaleInput } from '../storage/scaleInput'
+import { getPort } from 'src/storage/setting'
 
 const BrowserWindow = remote.BrowserWindow
 
@@ -32,14 +33,21 @@ const barcodeTemplate = 'data:text/html;charset=UTF-8,' + encodeURIComponent(
 class ScaleReader {
   lastReaded = 0
   callbacks = []
+  serialPort = null
 
   constructor(serialPort) {
+    this.serialPort = serialPort
+
+    this.setUp()
+  }
+
+  setUp = async () => {
     const that = this
     const reader = function (data) {
       data = data.toString();
       // sometime data is not containing the decimal somehow, so we need to add the decimal
-      if (data.indexOf('?') !== -1 
-      // || data.indexOf(' ') !== -1
+      if (data.indexOf('?') !== -1
+        // || data.indexOf(' ') !== -1
       ) {
         return
       }
@@ -47,7 +55,7 @@ class ScaleReader {
       const number = parseFloat(data, 10)
       // if not a number, also ignore
       if (isNaN(number)) return
-      
+
       if (that.isObjectChanged(number)) {
         // there is a new object is put to the scale
         const time = Math.abs(moment().diff(ANCHOR, 'second'))
@@ -59,8 +67,10 @@ class ScaleReader {
       that.lastReaded = number
     }
 
+    const COM = await getPort()
+    console.log(`[ScaleReader] COM port ${COM.value} `)
     // const port = new serialPort('/dev/tty.usbserial-14520', {
-    const port = new serialPort('COM4', {
+    const port = new this.serialPort(COM.value, {
       baudRate: 9600
     }, function (err) {
       if (err) {

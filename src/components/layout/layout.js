@@ -10,12 +10,11 @@ export default class AppLayout extends React.Component {
     }
   
     render() {
-
       const main_nav_selected_id = this.props.page ? `${this.props.page.main_nav_id}` : '1'
-      const slide_selected_id = this.props.page ? `${this.props.page.slide_id}` : '1'
+      let slide_selected_id = this.props.page ? `${this.props.page.slide_id}` : '1'
       return (
-        <Layout id="layout-main">
-          <Header className="header">
+        <Layout id="layout-main" >
+          <Header className="header" >
             <div className="logo" />
             <Menu
               theme="dark"
@@ -26,7 +25,7 @@ export default class AppLayout extends React.Component {
               <Menu.Item 
                 key="1"
                 onClick={() => {
-                  this.props.history.push('/')
+                  this.props.history.push('weighted')
                 }}
               >
                   Cân
@@ -50,14 +49,12 @@ export default class AppLayout extends React.Component {
                 <Menu
                   mode="inline"
                   defaultSelectedKeys={[slide_selected_id]}
-                // defaultOpenKeys={['sub1']}
                   style={{ height: '100%' }}
                 >
-                  
                   <Menu.Item
                     key="1"
                     onClick={() => {
-                      this.props.history.push('/')
+                      this.props.history.push('weighted')
                     }}
                   >
                     <Icon type="appstore" /> Cân sản phảm
@@ -70,25 +67,38 @@ export default class AppLayout extends React.Component {
                   >
                     <Icon type="check-square" /> Kiểm kê
                   </Menu.Item>
-                  
-                  <SubMenu
-                    key="sub2"
-                    title={
-                      <span>
-                        <Icon type="laptop" />
-                        Ban quản trị
-                      </span>
-                    }
+                    
+                  <Menu.Item
+                    key="3"
+                    onClick={() => {
+                      this.props.history.push('statsCheckup')
+                    }}
                   >
-                    <Menu.Item key="5">Báo cáo cân</Menu.Item>
-                    <Menu.Item key="6">Báo cáo kiểm kê</Menu.Item>
-                    <Menu.Item key="7">Đổi mật khẩu quản trị</Menu.Item>
-                  </SubMenu>
+                    <Icon type="export" /> Lịch sử kiểm kê 
+                    </Menu.Item>
+                    <Menu.Item
+                      key="4"
+                      onClick={() => {
+                        this.props.history.push('statsWeighted')
+                      }}
+                    >
+                      <Icon type="import" /> Lịch sử cân
+                    </Menu.Item>
+                    
+                    <Menu.Item
+                      key="5"
+                    onClick={() => {
+                      this.props.history.push('settings')
+                    }}
+                    >
+                    <Icon type="setting" /> Cài đặt
+                    </Menu.Item>
+                  
                   <Menu.Item
                     onClick={() => {
                       $api.createWindow('about')
                     }}
-                    key="8"
+                    key="6"
                   >
                       <Icon type="info-circle" /> Giới thiệu phần mềm
                   </Menu.Item>
@@ -103,5 +113,4 @@ export default class AppLayout extends React.Component {
       </Layout>
       )
     }
-
   }

@@ -42,4 +42,4 @@ yarn pack:mac
 yarn pack:win
 yarn pack:linux
 ```
-ngay 9/9/2019 add ssh key
+test remote

@@ -9,6 +9,7 @@ const dbFactory = (appPath, fileName) => Datastore.create({
 class Db {
   scaleInputs= null
   checkups= null
+  settings= null
 
   constructor() {
     this.init()
@@ -18,6 +19,7 @@ class Db {
     const appPath = $api.app.getAppPath()
     this.scaleInputs = dbFactory(appPath, 'scaleInputs.db')
     this.checkups = dbFactory(appPath, 'checkups.db')
+    this.settings = dbFactory(appPath, 'settings.db')
   }
 }
 

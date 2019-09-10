@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Router, AsyncImport } from '../../components'
+import { Router, AsyncImport } from 'src/components'
 
 export default {
   path: '/about',
@@ -9,7 +9,7 @@ export default {
       exact: true,
       path: '/about/',
       params: { key: 'about' },
-      component: AsyncImport(() => import('./about')),
+      component: AsyncImport(() => import('src/pages/about/about')),
     },
   ]} />,
 }

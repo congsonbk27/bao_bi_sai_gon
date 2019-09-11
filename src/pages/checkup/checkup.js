@@ -55,9 +55,6 @@ export default class Page extends React.Component {
           <div className="content_table">
             <table id='products'>
               <tbody>
-                {/* {this.renderRowHead()} */}
-                {/* <tr>{this.renderRowHead()}</tr> */}
-                {/* <tr>{this.renderTableHeader()}</tr> */}
                 {this.renderTableHeader()}
                 {this.renderAllProduct()}
               </tbody>
@@ -99,7 +96,6 @@ export default class Page extends React.Component {
       </tr>
     );
   }
-
 
   renderRowProduct = (product) => {
     return (

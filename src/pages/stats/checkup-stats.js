@@ -2,7 +2,6 @@ import React from 'react'
 import { Table, DatePicker, Button, Statistic, Card, Row, Col, Icon } from 'antd';
 import moment from 'moment'
 import _ from 'lodash'
-// import { getCheckupInput } from 'src/stoge'
 import Layout from 'src/components/layout/layout'
 import page from 'src/constants/page.const'
 import { find_data_from_database, find_all_data_from_database } from "../../storage/checkupStoge"
@@ -96,8 +95,6 @@ export default class CheckupStats extends React.Component {
                 <i>&nbsp;</i>
                 <DatePicker placeholder="Tới ngày" value={this.state.endDate} onChange={this.onChangeEndDate} />
                 <i>&nbsp;</i>
-                {/* <Button onClick={this.applyDateRange}>OK</Button> */}
-
                 <Button onClick={this.applyDateFind}>OK</Button>
                 {
                   this.state.startDate && this.state.endDate && this.state.showClearDateRangeButton ?

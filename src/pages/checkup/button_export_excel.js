@@ -46,8 +46,6 @@ const dataSet2 = [
 ];
 
 export default class Download extends React.Component {
-
-
     render() {
         var products = this.props.prosProduct;
         var arrItems = [];

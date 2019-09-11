@@ -5,7 +5,7 @@ import { Button } from 'antd'
 import Layout from '../../components/layout/layout'
 import page from '../../constants/page.const'
 import './style.less'
-import ExportExcellButton from './test'
+import ExportExcellButton from './button_export_excel'
 import { createCheckupInput, getCheckupInput } from "../../storage/checkupStoge"
 import Panner from './panner'
 
@@ -172,11 +172,23 @@ export default class Page extends React.Component {
     return array
   }
   renderTableHeader = () => {
-    let header = Object.keys(this.state.products[0])
-    return header.map((key, index) => {
-      return <th key={index}>{key.toUpperCase()}</th>
-    })
+    return (
+      <tr key="2" id="head_table">
+        <td>STT</td>
+        <td>Mã sản phẩm</td>
+        <td>Khối lượng</td>
+        <td>Thời gian quét</td>
+      </tr>
+    );
   }
+
+
+  // renderTableHeader = () => {
+  //   let header = Object.keys(this.state.products[0])
+  //   return header.map((key, index) => {
+  //     return <th key={index}>{key.toUpperCase()}</th>
+  //   })
+  // }
   renderRowTable = () => {
     const array = [];
     for (let i = 0; i < this.state.products.length; i++) {

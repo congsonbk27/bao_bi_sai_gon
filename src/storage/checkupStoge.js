@@ -12,6 +12,41 @@ export const createCheckupInput = async ({
   return checkupInput;
 }
 
+export const find_data_from_database = async (startDate, endDate) => {
+  console.log("--> Start Date: ", startDate);
+  console.log("--> End Date: ", endDate);
+
+  const allDataInDatabase = await db.checkups.find();
+  console.log("--> allDataInDatabase: ", allDataInDatabase);
+
+  const where = {};
+  if (startDate && endDate) {
+    where.$where = function () {
+      const time = moment(this.createdAt)
+      return time.isBetween(startDate, endDate.add(1, 'day'));
+    }
+  }
+
+  const checkupWhere = await db.checkups.find(where);
+  console.log("--> checkupWhere: ", checkupWhere);
+
+  // note that, there are no SUM function on NeDB now, that's shit
+  let sum = 0;
+  let count = checkupWhere.length;
+  for (let i = 0; i < count; i++) {
+    const item = checkupWhere[i];
+    if (item.weight) sum = parseFloat(item.weight) + sum;
+  }
+  console.log("--> sum: ", sum);
+
+  return {
+    count: count,
+    data: checkupWhere,
+    sumAll: sum
+  }
+}
+
+
 export const getCheckupInput = async ({ itemPerPage, page, sortField, sortOrder, startDate, endDate }) => {
   console.log("--> Start Date: ", startDate);
   console.log("--> End Date: ", endDate);
@@ -54,9 +89,7 @@ export const getCheckupInput = async ({ itemPerPage, page, sortField, sortOrder,
     // console.log("--->sum: ", sum);
   }
   console.log("--> checkupInputsForSum: ", checkupInputsForSum);
-  // console.log("--->Count: ", count);
-  // console.log("--->Count: ", count);
-  // console.log("--->Count: ", count);
+
   return {
     count,
     data: checkupInputs,

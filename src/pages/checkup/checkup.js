@@ -22,7 +22,7 @@ export default class Page extends React.Component {
       arrId: [],
       arrWeight: [],
       products: [
-        { no: 0, id: "0", weight: 0, total: 0, time: null }
+        // { no: 0, id: "0", weight: 0, total: 0, time: null }
       ],
       sum: 0
     }
@@ -57,8 +57,8 @@ export default class Page extends React.Component {
               <tbody>
                 {/* {this.renderRowHead()} */}
                 {/* <tr>{this.renderRowHead()}</tr> */}
-                <tr>{this.renderTableHeader()}</tr>
-                {/* {this.renderRowTable()} */}
+                {/* <tr>{this.renderTableHeader()}</tr> */}
+                {this.renderTableHeader()}
                 {this.renderAllProduct()}
               </tbody>
             </table>
@@ -71,7 +71,7 @@ export default class Page extends React.Component {
   clearSession = () => {
     this.setState({
       products: [
-        { no: 0, id: "0", weight: 0, total: 0 }
+        // { no: 0, id: "0", weight: 0, total: 0 }
       ],
       sum: 0
     });
@@ -82,30 +82,32 @@ export default class Page extends React.Component {
     var arrRows = [];
     if (this.state.products) {
       for (let i = 0; i < this.state.products.length; i++) {
+        
         arrRows.push(this.renderRowProduct(this.state.products[i]));
       }
     }
     return arrRows;
   }
 
-  renderRowHead = () => {
+  renderTableHeader = () => {
     return (
-      <tr key="5">
+      <tr key="2" id="head_table">
         <td>STT</td>
-        <td>ID</td>
+        <td>Mã sản phẩm</td>
         <td>Khối lượng</td>
-        <td>Ngày giờ</td>
+        <td>Thời gian quét</td>
       </tr>
     );
   }
 
+
   renderRowProduct = (product) => {
     return (
       <tr key={product.id}>
-        <td>{product.no}</td>
+        <td>{product.no + 1}</td>
         <td>{product.id}</td>
         <td>{product.weight}kg</td>
-        <td>{product.total}kg</td>
+        {/* <td>{product.total}kg</td> */}
         <td>{product.time}</td>
       </tr>
     );

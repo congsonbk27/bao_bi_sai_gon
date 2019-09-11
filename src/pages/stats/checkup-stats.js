@@ -1,42 +1,14 @@
 import React from 'react'
 import { Table, DatePicker, Button, Statistic, Card, Row, Col, Icon } from 'antd';
 import moment from 'moment'
+import _ from 'lodash'
 // import { getCheckupInput } from 'src/stoge'
 import Layout from 'src/components/layout/layout'
 import page from 'src/constants/page.const'
-import { find_data_from_database, getCheckupInput } from "../../storage/checkupStoge"
+import { find_data_from_database, find_all_data_from_database } from "../../storage/checkupStoge"
 import '../../pages/checkup/style.less'
 
-
 const { RangePicker } = DatePicker;
-
-const columnsConfig = [
-  {
-    title: 'STT',
-    dataIndex: 'index',
-    width: '20%',
-  },
-  {
-    title: 'Mã sản phẩm',
-    dataIndex: 'time',
-    render: time => typeof time == 'string' || typeof time == 'number' ? time : '',
-    width: '20%',
-  },
-  {
-    title: 'Khối lượng',
-    dataIndex: 'weight',
-    sorter: true,
-    render: weight => weight ? `${weight} kg` : 'Không rõ',
-    width: '20%',
-  },
-  {
-    title: 'Ngày cân',
-    sorter: true,
-    dataIndex: 'createdAt',
-    render: createdAt => createdAt ? `${moment(createdAt).format('HH:mm:SS  --- DD/MM/YYYY')}` : 'Không rõ',
-    width: '20%',
-  },
-];
 
 const ITEM_PER_PAGE = 12
 export default class CheckupStats extends React.Component {
@@ -50,53 +22,11 @@ export default class CheckupStats extends React.Component {
         current: 1
       },
       loading: false,
-      record: {}
+      record: {},
+      endDate: null,
+      startDate: null
     }
-  }
-
-  componentDidMount() {
-    this.reset()
-  }
-
-  handleTableChange = (pagination, filters, sorter) => {
-    const pager = { ...this.state.pagination };
-    pager.current = pagination.current;
-    this.setState({
-      pagination: pager,
-    });
-    this.fetchDataFromDb({
-      results: pagination.pageSize,
-      page: pagination.current,
-      sortField: sorter.field,
-      sortOrder: sorter.order,
-      ...filters,
-    });
-  };
-
-  fetchDataFromDb = async ({ page, sortField, sortOrder }) => {
-    this.setState({
-      loading: true
-    })
-    let data = {}
-    try {
-      data = await getCheckupInput({
-        itemPerPage: ITEM_PER_PAGE, page, sortField, sortOrder, startDate: this.state.startDate, endDate: this.state.endDate
-      })
-    } catch (error) {
-      console.warn('CheckupStats Oh shit fetchDataFromDb error', error)
-    }
-    const newState = {
-      data: data && data.data && data.data.length ? data.data.map((d, i) => ({ ...d, index: ITEM_PER_PAGE * (this.state.pagination.current - 1) + i + 1 })) : [],
-      pagination: {
-        ...this.state.pagination,
-        total: data.count,
-        sumAll: data.sumAll
-      },
-      loading: false
-    }
-    console.log(newState);
-
-    this.setState(newState)
+    this.applyAllDate();
   }
 
   onChangeEndDate = (date) => {
@@ -127,45 +57,36 @@ export default class CheckupStats extends React.Component {
     }, this.reset)
   }
 
-  applyDateRange = () => {
-    if (this.state.startDate && this.state.endDate) {
-      this.reset()
-      this.setState({
-        showClearDateRangeButton: true
-      })
-    }
-  }
   applyDateFind = async () => {
     var data = {};
     if (this.state.startDate && this.state.endDate) {
-      data = await find_data_from_database(this.state.startDate, this.state.endDate);
-      // this.reset()
-      // this.setState({
-      //   showClearDateRangeButton: true
-      // })
-      console.log("==> data find: ", data);
+
+      const startDay = _.cloneDeep(this.state.startDate).subtract(1, 'day').format('YYYY-MM-DD');
+      const endDay = _.cloneDeep(this.state.endDate).add(1, 'day').format('YYYY-MM-DD');
+      data = await find_data_from_database(startDay, endDay);
     }
-    console.log("==> data.count: ", data.count);
-    if (data.count > 0) {
-      this.setState({ record: data });
+
+    if (data.count >= 0) {
+      this.setState({
+        record: data
+      });
     }
   }
 
-  reset = () => {
-    this.setState({
-      pagination: {
-        ...this.state.pagination,
-        current: 1
-      },
-      data: [],
-    })
-    this.fetchDataFromDb({ page: 1, sortField: 'createdAt', sortOrder: 'ascend' })
+  applyAllDate = async () => {
+    const data = await find_all_data_from_database();
+    console.log("==> all_data: ", data);
+    if (data.count > 0) {
+      this.setState({
+        record: data
+      });
+    }
   }
 
   render() {
     const { history } = this.props
     return (
-      <Layout history={history} page={page.stat_weighted}>
+      <Layout history={history} page={page.stat_checkup}>
         <Row gutter={16}>
           <Col span={12}>
             <Card>
@@ -176,6 +97,7 @@ export default class CheckupStats extends React.Component {
                 <DatePicker placeholder="Tới ngày" value={this.state.endDate} onChange={this.onChangeEndDate} />
                 <i>&nbsp;</i>
                 {/* <Button onClick={this.applyDateRange}>OK</Button> */}
+
                 <Button onClick={this.applyDateFind}>OK</Button>
                 {
                   this.state.startDate && this.state.endDate && this.state.showClearDateRangeButton ?
@@ -212,31 +134,19 @@ export default class CheckupStats extends React.Component {
             </Card>
           </Col>
         </Row>
-
-
-        {/* <Table
-          columns={columnsConfig}
-          rowKey={record => record._id ? record._id : Math.random()}
-          dataSource={this.state.data}
-          pagination={this.state.pagination}
-          loading={this.state.loading}
-          onChange={this.handleTableChange}
-          rowClassName={(record, index) => (index % 2) ? 'odd' : 'even'}
-        /> */}
+        <br></br>
 
         <div className="groupHead2">
           <div className="name_group_2">Danh sách sản phẩm: </div>
           <div className="content_table">
             <table id='products'>
               <tbody>
-                {/* <tr>{this.renderTableHeader()}</tr> */}
                 {this.renderTableHeader()}
                 {this.renderAllProduct()}
               </tbody>
             </table>
           </div>
         </div>
-
 
       </Layout>
     )
@@ -264,30 +174,15 @@ export default class CheckupStats extends React.Component {
   }
 
   renderRowProduct = (data, index) => {
+    const time = data.createdAt ? `${moment(data.createdAt).format('HH:mm:SS  --- DD/MM/YYYY')}` : 'Không rõ';
     return (
-      <tr key={data.id}>
-        <td>{index}</td>
+      <tr key={index}>
+        <td>{index + 1}</td>
         <td>{data.id}</td>
         <td>{data.weight}kg</td>
-        {/* <td>{data.updatedAt}</td> */}
+        <td>{time}</td>
       </tr>
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 } // class Page end

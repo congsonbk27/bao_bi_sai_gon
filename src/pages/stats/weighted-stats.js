@@ -203,5 +203,4 @@ export default class CheckupStats extends React.Component {
       </Layout>
     )
   }
-
 } // class Page end

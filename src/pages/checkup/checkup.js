@@ -124,15 +124,16 @@ export default class Page extends React.Component {
         console.log(data);          // ready barcode ready for a use
         let numProduct = this.state.products.length;
         //check unique ID
-        var strId = data.substring(0, 9);
+        var strId = data.substring(0, 13);
+        strId = strId.toUpperCase();
         for (let i = 0; i < numProduct; i++) {
           if (strId == this.state.products[i].id) {
             return;
           }
         }
         //check and convert weight to kg
-        var strWeight = data.substring(9, 15);
-        var weight = parseInt(strWeight) / 1000; //convert eight: g -> kg
+        var strWeight = data.substring(9, 13);
+        var weight = parseInt(strWeight) / 10; //convert eight: g -> kg
         if (isNaN(weight) == true) {
           return;
         }
@@ -152,7 +153,7 @@ export default class Page extends React.Component {
         for (let i = 0; i < numProduct; i++) {
           sumWeight += this.state.arrWeight[i];
         }
-        sumWeight = sumWeight.toFixed(3);
+        sumWeight = sumWeight.toFixed(1);
         const oldProducts = this.state.products;
         oldProducts.unshift({ no: numProduct, id: strId, weight: weight, total: sumWeight, time: time_save });
 

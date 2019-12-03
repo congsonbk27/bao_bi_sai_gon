@@ -3,3 +3,6 @@ dist/
 prod/
 yarn-error.log
 .DS_Store
+barcode.png
+log.txt
+*.png
